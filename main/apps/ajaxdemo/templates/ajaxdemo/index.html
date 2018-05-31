@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>ajax django demo</title>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css"/>
+</head>
+<body>
+
+
+    <h1>Demo 1</h1>
+    <button id='button_json' class='btn btn-primary'>fetch HttpResponse from ajaxdemo/all.json</button>
+    <button id='button_html' class='btn btn-primary'>fetch HttpResponse from ajaxdemo/all.html</button>
+
+    <div id='placeholder1' style="margin-top:50px; border:1px solid silver; padding:10px; width:700px;"> place holder for ajax content</div>
+
+    <script>
+    // ========================= DEMO 1 ======================================
+    $('#button_json').click(function(){
+        console.log('button_json is clicked');
+        $.ajax({
+            url: '/all.json',
+            success: function(serverResponse){
+                console.log('success, serverResponse= ', serverResponse)
+                $('#placeholder1').html(JSON.stringify(serverResponse))
+                console.log(JSON.stringify(serverResponse))
+            }
+        })
+    });
+
+    $('#button_html').click(function(){
+        console.log('button_html is clicked');
+        $.ajax({
+            url: '/all.html',
+            success: function(serverResponse){
+                console.log('success, serverResponse (from all_html) =>', serverResponse);
+                $('#placeholder1').html(serverResponse)
+            }
+        })
+    });
+    </script>
+
+
+    <!-- DEMO 2 ========================================================== -->
+    <hr>
+    <h1>Demo 2 - Ajax form</h1>
+    <form action'/find' method="POST">
+        {% csrf_token %}
+        find all users whose first name starts with
+        <input id='ajax_first_name' type="text" name='first_name_starts_with'/>
+    </form>
+
+    <form action'/find_last' method="POST">
+        {% csrf_token %}
+        last name:
+        <input id='last_name_find' type='text' name='last_name_starts_with'/>
+    </form>
+
+    <form action'/find_age' method="POST">
+        {% csrf_token %}
+        age :
+        <input id='age_find' type='number' name='age_starts_with'/>
+    </form>
+
+    <div id="placeholder2" style="margin-top:50px; border:1px solid silver; padding:10px; width:700px;">Placeholder 2</div>
+
+    <script>
+    // ================= FIST NAME filter ================================
+    $('#ajax_first_name').keyup(function(){
+        console.log('key pressed ===== ');
+        console.log(" .parent() .serialize() return =>",$(this).parent().serialize())
+        $.ajax({
+            url: '/find',
+            method: 'post',
+            data: $(this).parent().serialize(),
+            success: function(serverResponse){
+                // console.log('success serverResponse =>', serverResponse);
+                $('#placeholder2').html(serverResponse)
+            }
+        })
+    })
+    // ===================== LAST NAME filter ==============================
+    $('#last_name_find').keyup(function(){
+        console.log('key_last pressed =====', $(this).serialize());
+        $.ajax({
+            url: '/find_last',
+            method: 'POST',
+            data: $(this).parent().serialize(),
+            success: function(serverResponse){
+                $('#placeholder2').html(serverResponse);
+                console.log('success');
+            }
+        })
+    })
+
+    // ====================== age filter =================
+    $('#age_find').keyup(function(){
+        console.log('keypressed age =>', $(this).serialize());
+        $.ajax({
+            url: '/find_age',
+            method: 'POST',
+            data: $(this).parent().serialize(),
+            success: function(serverResponse){
+                $('#placeholder2').html(serverResponse);
+                console.log('success age');
+            }
+        })
+    })
+    </script>
+
+
+
+
+
+
+
+<!-- DEMO 3 -->
+<!-- ==================create user ================== -->
+<hr>
+<h1>Demo 3 - Ajax form II</h1>
+<h3>add a new user</h3>
+
+<!-- {% if messages %}
+{% for message in messages %} -->
+<!-- <span style="color: green;"> {{message}} </span> -->
+<!-- {% endfor %}
+    {% endif %} -->
+    <div id='success' style="color:green;"></div>
+
+<form id='create_user_ajax_form' class='ajax_form' action="/create" method="POST">
+    {% csrf_token %}
+    First name <input type="text" name="first_name"/>
+    Last name <input type="text" name="last_name"/>
+    email Address <input type="text" name="email_address"/>
+    <input type="submit" value="Submit"/>
+</form>
+
+<div id="placeholder3" style="margin-top:50px; border:1px solid silver; padding:10px; width:800px;">placeholder 3</div>
+
+<script>
+    $('#create_user_ajax_form').submit(function(e){
+        e.preventDefault();
+        console.log('prevented default submit!!!!');
+        $.ajax({
+            url: $(this).attr('action'),
+            method: 'POST',
+            data: $(this).serialize(),
+            success: function(serverResponse){
+                console.log('success came back =>', serverResponse);
+                $('#placeholder3').html(serverResponse);
+                console.log('----> before append');
+                $('#success').append('> > > > > ajax request - response SUCCESS < < < < ');
+                console.log('----> AFTER append')
+                // document.getElementById('success').innerHTML = " > > > SUCCESSS < < < ";
+            }
+        })
+    })
+</script>
+
+</body>
+</html>

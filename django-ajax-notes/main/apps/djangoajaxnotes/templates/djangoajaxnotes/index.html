@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>django ajax notes</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css">
+    <script
+  src="https://code.jquery.com/jquery-3.3.1.min.js"
+  integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+  crossorigin="anonymous"></script>
+  <style>
+      *{
+          padding: 0;
+          margin: 0;
+          /* outline: 1px dotted red; */
+      }
+  div.left{
+      width: 400px;
+      min-height: 600px;
+      display: inline-block;
+      vertical-align: top;
+      margin-left: 30px;
+      /* outline: 1px solid black; */
+      background-color: aliceblue;
+  }
+  div.right{
+      width: 300px;
+      min-height: 100px;
+      display: inline-block;
+      vertical-align: top;
+      /* outline: 1px solid black; */
+      margin-left: 20px;
+      background-color: antiquewhite
+  }
+  textarea{
+      width: 100%;
+  }
+  .note{
+      outline: 1px dotted black;
+  }
+ 
+  </style>
+</head>
+<body>
+    <h1> Django - Ajax - Notes</h1>
+    <h5>My notes</h5>
+    <div class="left">
+        <div id="note"></div>
+    </div>
+    
+    <div class="right">
+            <h5>add a note:</h5>
+            <form id='create_note_form' action='/add' method="POST">
+                {% csrf_token %}
+                <textarea name='note_here'></textarea>
+                <input type="submit" value="submit">
+            </form>
+            <a href='/reset'><button>RESET/clear notes (table)</button></a>
+    </div>
+
+    <script>
+        $('#create_note_form').submit(function(e){
+            e.preventDefault();
+            console.log('\nclicked form data');
+            $.ajax({
+                url: $(this).attr('action'),
+                method: 'POST',
+                data: $(this).serialize(),
+                success: function(serverResponse){
+                    console.log('\nsuccess came back serverResponse ======>', serverResponse);
+                    $('#note').html(serverResponse)
+                }
+            })
+        })
+    </script>
+
+</body>
+</html>

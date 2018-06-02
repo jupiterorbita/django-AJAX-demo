@@ -1,0 +1,8 @@
+<div class="note">
+    <p>{{ note.actual_note }} <br></p>
+    <form class='del' action='/delete/{{note.id}}' method='POST'>
+        {% csrf_token %}
+        <input type="hidden" name='del_id' value='{{note.id}}'/>
+        <input type='submit' value='DELETE'/>
+    </form>
+</div>

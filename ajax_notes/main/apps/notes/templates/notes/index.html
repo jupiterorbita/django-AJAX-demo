@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>notes ajax with django</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
+    <style>
+        *{
+            padding: 0;
+            margin: 0;
+            /* outline: 1px dotted red; */
+        }
+    div.left{
+        width: 400px;
+        min-height: 600px;
+        display: inline-block;
+        vertical-align: top;
+        margin-left: 30px;
+        /* outline: 1px solid black; */
+        background-color: aliceblue;
+    }
+    div.right{
+        width: 300px;
+        min-height: 100px;
+        display: inline-block;
+        vertical-align: top;
+        /* outline: 1px solid black; */
+        margin-left: 20px;
+        background-color: rgb(231, 217, 198)
+    }
+    textarea{
+        width: 100%;
+    }
+    /* #note{
+        outline: 1px dotted black;
+    } */
+    div.note{
+        outline: 1px dotted gray;
+        padding: 5px;
+        margin: 5px;
+    }
+   
+    </style>
+    <script
+        src="https://code.jquery.com/jquery-3.3.1.min.js"
+        integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+        crossorigin="anonymous"
+    ></script>
+
+</head>
+<body>
+    <h1>notes</h1>
+
+    <div class="left">
+        <div id="notez">
+
+            {% for note in notes %}
+            <div class="note">
+                <p>{{ note.actual_note }} <br></p>
+                <form class='del' action='/delete/{{note.id}}' method='POST'>
+                    {% csrf_token %}
+                    <input type="hidden" name='del_id' value='{{note.id}}'/>
+                    <input id='sub' type='submit' value='DELETE'/>
+                </form>
+            </div>
+            {% endfor %}
+
+        </div>
+    </div>
+
+    <div class="right">
+        <h5>add a note:</h5>
+        <form id='make_note' action='/add' method="POST">
+            {% csrf_token %}
+            <textarea name='note_here'></textarea>
+            <input type="submit" value="submit">
+        </form>
+        <a href='/reset'><button>RESET/clear notes (table)</button></a>
+    </div>
+
+    <script>
+        $('#make_note').submit(function(e){
+            e.preventDefault();
+            console.log('\nclicked form data');
+            $.ajax({
+                url: $(this).attr('action'),
+                method: 'POST',
+                data: $(this).serialize(),
+                success: function(serverResponse){
+                    console.log('\nsuccess came back serverResponse ======>', serverResponse);
+                    $('#notez').prepend(serverResponse)
+                }
+            })
+        })
+
+        // $('form.del').submit(function(e) {
+        //     console.log('\nclicked del button data');
+        //     var _this = this;
+        //     $.ajax({
+        //         url: $(this).attr('action'),
+        //         method: 'POST',
+        //         data: $(this).serialize(),
+        //         success: function(serverResponse) {
+        //             console.log('\nsuccess came back serverResponse ======>', serverResponse);
+        //             $(_this).parent().remove();
+        //             return false;
+        //         }
+        //     })
+        //     return false;
+        // })
+        $(document).on('submit', 'form.del', function(e) {
+            console.log('\nclicked del button data');
+            var _this = this;
+            $.ajax({
+                url: $(this).attr('action'),
+                method: 'POST',
+                data: $(this).serialize(),
+                success: function(serverResponse) {
+                    console.log('\nsuccess came back serverResponse ======>', serverResponse);
+                    $(_this).parent().remove();
+                }
+            })
+            return false;
+        })
+
+    </script>
+</body>
+</html>
